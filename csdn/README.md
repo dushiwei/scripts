@@ -1,59 +1,45 @@
-# 威锋网
+# CSDN
 
 > 代码已同时兼容 Surge & QuanX, 使用同一份签到脚本即可
-
-> 注意了威锋网只能在一处登录, 如果你手机上登录了, 其他地方的登录会话会被踢掉 (重新登录需要重新获取 Cookie)
-
-> 2020.1.11 QuanX 在`190`版本开始, 获取 Cookie 方式需要从`script-response-body`改为`script-request-header`
-
-> 2020.2.6 威锋加了验证, 弃坑
-
-> 2020.2.10 恢复签到: 增加参数签名
-
-> 2020.2.11 威锋加了校验, 偶尔能签, 选择性弃坑吧!
 
 ## 配置 (Surge)
 
 ```properties
 [MITM]
-*.feng.com
+*.csdn.net
 
 [Script]
-http-request ^https:\/\/(www\.)?feng\.com\/?.? script-path=https://raw.githubusercontent.com/chavyleung/scripts/master/feng/feng.cookie.js
-cron "10 0 0 * * *" script-path=https://raw.githubusercontent.com/chavyleung/scripts/master/feng/feng.js
+# 注意获取Cookie有两条脚本
+http-request ^https:\/\/passport.csdn.net\/v1\/api\/app\/login\/checkToken script-path=https://raw.githubusercontent.com/chavyleung/scripts/master/csdn/csdn.cookie.js
+http-request ^https:\/\/gw.csdn.net\/mini-app\/v2\/lucky_draw\/login\/sign_in\? script-path=https://raw.githubusercontent.com/chavyleung/scripts/master/csdn/csdn.cookie.js
+cron "10 0 0 * * *" script-path=https://raw.githubusercontent.com/chavyleung/scripts/master/csdn/csdn.js
 ```
 
 ## 配置 (QuanX)
 
 ```properties
 [MITM]
-*.feng.com
+*.csdn.net
 
 [rewrite_local]
-# 189及以前版本
-^https:\/\/(www\.)?feng\.com\/?.? url script-response-body feng.cookie.js
-# 190及以后版本
-^https:\/\/(www\.)?feng\.com\/?.? url script-request-header feng.cookie.js
+# 注意获取Cookie有两条脚本
+^https:\/\/passport.csdn.net\/v1\/api\/app\/login\/checkToken url script-request-header csdn.cookie.js
+^https:\/\/gw.csdn.net\/mini-app\/v2\/lucky_draw\/login\/sign_in\? url script-request-header csdn.cookie.js
 
 [task_local]
-1 0 * * * feng.js
+1 0 * * * csdn.js
 ```
 
 ## 说明
 
-1. 先在浏览器登录 `(先登录! 先登录! 先登录!)`
-   - 如果你找不到登录的入口: 随便找个帖子做个“回帖”的动作, 会提示你登录的.
-   - 可以试试: https://www.feng.com/newthread
-2. 先把`*.feng.com`加到`[MITM]`
-3. 再配置重写规则:
+1. 先把`*.csdn.net`加到`[MITM]`
+2. 再配置重写规则:
    - Surge: 把两条远程脚本放到`[Script]`
-   - QuanX: 把`feng.cookie.js`和`feng.js`传到`On My iPhone - Quantumult X - Scripts` (传到 iCloud 相同目录也可, 注意要打开 quanx 的 iCloud 开关)
-4. 打开浏览器访问: https://www.feng.com
-5. 系统提示: `获取Cookie: 成功`
-   - 如果一直取不到 Cookie, 请尝试一切你想到的姿势, 如:
-   - 访问: https://www.feng.com/newthread
-   - 然后刷新下
-6. 最后就可以把第 1 条脚本注释掉了
+   - QuanX: 把`csdn.cookie.js`和`csdn.js`传到`On My iPhone - Quantumult X - Scripts` (传到 iCloud 相同目录也可, 注意要打开 quanx 的 iCloud 开关)
+3. 打开 APP , 系统提示: `获取刷新链接: 成功`
+4. 然后手动签到 1 次, 系统提示: `获取Cookie: 成功`
+5. 最后就可以把两条脚本注释掉了
+6. 运行一次脚本, 如果提示重复签到, 那就算成功了!
 
 > 第 1 条脚本是用来获取 cookie 的, 用浏览器访问一次获取 cookie 成功后就可以删掉或注释掉了, 但请确保在`登录成功`后再获取 cookie.
 
